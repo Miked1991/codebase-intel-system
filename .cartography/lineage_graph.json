@@ -1,0 +1,234 @@
+{
+  "directed": true,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "customers"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\customers.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "Customer overview data mart, offering key details for each unique customer. One row per customer.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\customers.yml::customers"
+    },
+    {
+      "id": "dataset:customers"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "orders"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\orders.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "Order overview data mart, offering key details for each order inlcluding if it's a customer's first order and a food vs. drink item breakdown. One row per order.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\orders.yml::orders"
+    },
+    {
+      "id": "dataset:orders"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "order_items"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\order_items.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\order_items.yml::order_items"
+    },
+    {
+      "id": "dataset:order_items"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "stg_customers"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_customers.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "Customer data with basic cleaning and transformation applied, one row per customer.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_customers.yml::stg_customers"
+    },
+    {
+      "id": "dataset:stg_customers"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "stg_locations"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_locations.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "List of open locations with basic cleaning and transformation applied, one row per location.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_locations.yml::stg_locations"
+    },
+    {
+      "id": "dataset:stg_locations"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "stg_orders"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_orders.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "Order data with basic cleaning and transformation applied, one row per order.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_orders.yml::stg_orders"
+    },
+    {
+      "id": "dataset:stg_orders"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "stg_order_items"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_order_items.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "Individual food and drink items that make up our orders, one row per item.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_order_items.yml::stg_order_items"
+    },
+    {
+      "id": "dataset:stg_order_items"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "stg_products"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_products.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "Product (food and drink items that can be ordered) data with basic cleaning and transformation applied, one row per product.",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_products.yml::stg_products"
+    },
+    {
+      "id": "dataset:stg_products"
+    },
+    {
+      "type": "transformation",
+      "source_datasets": [],
+      "target_datasets": [
+        "stg_supplies"
+      ],
+      "transformation_type": "dbt_model",
+      "source_file": "C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_supplies.yml",
+      "line_range": [
+        0,
+        0
+      ],
+      "sql_query": null,
+      "transformation_logic": null,
+      "description": "List of our supply expenses data with basic cleaning and transformation applied.\nOne row per supply cost, not per supply. As supply costs fluctuate they receive a new row with a new UUID. Thus there can be multiple rows per supply_id.\n",
+      "id": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_supplies.yml::stg_supplies"
+    },
+    {
+      "id": "dataset:stg_supplies"
+    }
+  ],
+  "edges": [
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\customers.yml::customers",
+      "target": "dataset:customers"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\orders.yml::orders",
+      "target": "dataset:orders"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\marts\\order_items.yml::order_items",
+      "target": "dataset:order_items"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_customers.yml::stg_customers",
+      "target": "dataset:stg_customers"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_locations.yml::stg_locations",
+      "target": "dataset:stg_locations"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_orders.yml::stg_orders",
+      "target": "dataset:stg_orders"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_order_items.yml::stg_order_items",
+      "target": "dataset:stg_order_items"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_products.yml::stg_products",
+      "target": "dataset:stg_products"
+    },
+    {
+      "type": "produces",
+      "source": "trans:C:\\Users\\hp\\AppData\\Local\\Temp\\tmp4cb95nv6\\models\\staging\\stg_supplies.yml::stg_supplies",
+      "target": "dataset:stg_supplies"
+    }
+  ]
+}

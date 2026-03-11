@@ -1,0 +1,35 @@
+[project]
+name = "brownfield-cartographer"
+version = "1.0.0"
+description = "Codebase Intelligence System for FDE Onboarding"
+authors = [{name = "FDE Team"}]
+dependencies = [
+    "tree-sitter>=0.20.0",
+    "tree-sitter-python>=0.20.0",
+    "tree-sitter-sql>=0.1.0",
+    "tree-sitter-yaml>=0.5.0",
+    "tree-sitter-javascript>=0.20.0",
+    "jedi>=0.19.0",
+    "rope>=1.11.0",
+    "sqlglot>=20.0.0",
+    "networkx>=3.1",
+    "pydantic>=2.5.0",
+    "langgraph>=0.0.20",
+    "langchain>=0.1.0",
+    "langchain-groq>=0.1.0",
+    "sentence-transformers>=2.2.0",
+    "scikit-learn>=1.3.0",
+    "pyvis>=0.3.0",
+    "python-dotenv>=1.0.0",
+    "gitpython>=3.1.40",
+    "nbformat>=5.9.0",
+    "click>=8.1.0",
+    "tiktoken>=0.5.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

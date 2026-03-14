@@ -36,8 +36,9 @@ class TreeSitterAnalyzer:
         if not language:
             return {"error": f"Unsupported language for {file_path}"}
         
-        # Read file
+        # Read file with proper encoding handling
         try:
+            # Always read as binary for tree-sitter
             with open(file_path, 'rb') as f:
                 content = f.read()
         except Exception as e:
@@ -80,7 +81,14 @@ class TreeSitterAnalyzer:
     def _calculate_comment_ratio(self, content: bytes, language: str) -> float:
         """Calculate ratio of comments to code."""
         try:
-            lines = content.decode('utf8').split('\n')
+            # Try to decode with utf-8, ignore errors
+            try:
+                text = content.decode('utf-8')
+            except UnicodeDecodeError:
+                # Fallback to latin-1 which never fails
+                text = content.decode('latin-1')
+            
+            lines = text.split('\n')
             comment_lines = 0
             
             if language == 'python':

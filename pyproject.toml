@@ -1,35 +1,43 @@
 [project]
-name = "brownfield-cartographer"
-version = "1.0.0"
-description = "Codebase Intelligence System for FDE Onboarding"
-authors = [{name = "FDE Team"}]
+name = "codebase-intelligence"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
 dependencies = [
-    "tree-sitter>=0.20.0",
-    "tree-sitter-python>=0.20.0",
-    "tree-sitter-sql>=0.1.0",
-    "tree-sitter-yaml>=0.5.0",
-    "tree-sitter-javascript>=0.20.0",
-    "jedi>=0.19.0",
-    "rope>=1.11.0",
-    "sqlglot>=20.0.0",
-    "networkx>=3.1",
-    "pydantic>=2.5.0",
-    "langgraph>=0.0.20",
-    "langchain>=0.1.0",
-    "langchain-groq>=0.1.0",
-    "sentence-transformers>=2.2.0",
-    "scikit-learn>=1.3.0",
-    "pyvis>=0.3.0",
-    "python-dotenv>=1.0.0",
-    "gitpython>=3.1.40",
-    "nbformat>=5.9.0",
     "click>=8.1.0",
+    "dotenv>=0.9.9",
+    "gitpython>=3.1.40",
+    "jedi>=0.19.0",
+    "langchain>=0.1.0",
+    "langchain-community>=0.0.10",
+    "langchain-groq>=0.1.0",
+    "langgraph>=0.0.20",
+    "load-dotenv>=0.1.0",
+    "matplotlib>=3.7.0",
+    "nbformat>=5.9.0",
+    "networkx>=3.1",
+    "numpy>=1.24.0",
+    "pandas>=2.0.0",
+    "plotly>=5.14.0",
+    "prompt-toolkit>=3.0.0",
+    "pydantic>=2.5.0,<3.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "pyvis>=0.3.0",
+    "pyyaml>=6.0",
+    "rich>=13.0.0",
+    "rope>=1.11.0",
+    "scikit-learn>=1.3.0",
+    "sentence-transformers>=2.2.0",
+    "sqlglot>=20.0.0,<25.0.0",
+    "tabulate>=0.9.0",
     "tiktoken>=0.5.0",
+    "tqdm>=4.65.0",
+    "tree-sitter>=0.21.0,<0.22.0",
+    "tree-sitter-javascript>=0.21.0,<0.22.0",
+    "tree-sitter-python>=0.21.0,<0.22.0",
+    "tree-sitter-sql>=0.3.0,<0.3.7",
+    "tree-sitter-typescript>=0.21.0,<0.22.0",
+    "tree-sitter-yaml>=0.6.0,<0.7.0",
 ]
-
-[build-system]
-requires = ["setuptools>=68.0.0"]
-build-backend = "setuptools.build_meta"
-
-[tool.setuptools.packages.find]
-where = ["src"]

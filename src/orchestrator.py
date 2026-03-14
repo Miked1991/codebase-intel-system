@@ -15,7 +15,8 @@ from .agents.archivist import ArchivistAgent
 from .agents.navigator import NavigatorAgent
 from .graph.knowledge_graph import KnowledgeGraphManager
 from .analyzers.git_analyzer import GitAnalyzer
-
+from dotenv import load_dotenv
+load_dotenv()
 
 class Orchestrator:
     """Orchestrates the multi-agent analysis pipeline."""

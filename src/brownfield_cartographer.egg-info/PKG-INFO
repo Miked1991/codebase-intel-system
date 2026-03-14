@@ -3,6 +3,7 @@ Name: brownfield-cartographer
 Version: 1.0.0
 Summary: Codebase Intelligence System for FDE Onboarding
 Author: FDE Team
+License-File: LICENSE
 Requires-Dist: tree-sitter>=0.20.0
 Requires-Dist: tree-sitter-python>=0.20.0
 Requires-Dist: tree-sitter-sql>=0.1.0
@@ -24,3 +25,4 @@ Requires-Dist: gitpython>=3.1.40
 Requires-Dist: nbformat>=5.9.0
 Requires-Dist: click>=8.1.0
 Requires-Dist: tiktoken>=0.5.0
+Dynamic: license-file

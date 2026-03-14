@@ -1,3 +1,5 @@
+LICENSE
+README.md
 pyproject.toml
 src/agents/__init__.py
 src/agents/archivist.py

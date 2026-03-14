@@ -1,90 +1,95 @@
-"""Language router for tree-sitter grammar selection."""
+"""Language router for tree-sitter grammar selection - Fixed for 0.22.0+ API."""
 
 import os
 from pathlib import Path
 from typing import Optional, Dict, Any, List
-import tree_sitter
-import tree_sitter_python
-import tree_sitter_sql
-import tree_sitter_yaml
-import tree_sitter_javascript
-import tree_sitter_typescript
+from tree_sitter import Language, Parser, Query, Tree, Node
+
+# Import language grammars
+try:
+    import tree_sitter_python
+    HAS_PYTHON = True
+except ImportError:
+    HAS_PYTHON = False
+    print("⚠️  tree-sitter-python not installed. Python parsing will be limited.")
+
+try:
+    import tree_sitter_sql
+    HAS_SQL = True
+except ImportError:
+    HAS_SQL = False
+    print("⚠️  tree-sitter-sql not installed. SQL parsing will be limited.")
+
+try:
+    import tree_sitter_yaml
+    HAS_YAML = True
+except ImportError:
+    HAS_YAML = False
+    print("⚠️  tree-sitter-yaml not installed. YAML parsing will be limited.")
+
+try:
+    import tree_sitter_javascript
+    HAS_JAVASCRIPT = True
+except ImportError:
+    HAS_JAVASCRIPT = False
+    print("⚠️  tree-sitter-javascript not installed. JavaScript parsing will be limited.")
+
+try:
+    import tree_sitter_typescript
+    HAS_TYPESCRIPT = True
+except ImportError:
+    HAS_TYPESCRIPT = False
+    print("⚠️  tree-sitter-typescript not installed. TypeScript parsing will be limited.")
 
 
 class LanguageRouter:
     """Routes files to appropriate tree-sitter grammars based on extension."""
     
-    # Language configurations with proper grammar loading
+    # Language configurations
     LANGUAGE_CONFIGS = {
         '.py': {
             'name': 'python',
-            'grammar': tree_sitter_python.language(),
-            'parser': None,
-            'query_files': ['python']
+            'module': tree_sitter_python if HAS_PYTHON else None,
+            'language_func': lambda m: m.language() if hasattr(m, 'language') else None,
         },
         '.sql': {
             'name': 'sql',
-            'grammar': tree_sitter_sql.language(),
-            'parser': None,
-            'query_files': ['sql']
+            'module': tree_sitter_sql if HAS_SQL else None,
+            'language_func': lambda m: m.language() if hasattr(m, 'language') else None,
         },
         '.yml': {
             'name': 'yaml',
-            'grammar': tree_sitter_yaml.language(),
-            'parser': None,
-            'query_files': ['yaml']
+            'module': tree_sitter_yaml if HAS_YAML else None,
+            'language_func': lambda m: m.language() if hasattr(m, 'language') else None,
         },
         '.yaml': {
             'name': 'yaml',
-            'grammar': tree_sitter_yaml.language(),
-            'parser': None,
-            'query_files': ['yaml']
+            'module': tree_sitter_yaml if HAS_YAML else None,
+            'language_func': lambda m: m.language() if hasattr(m, 'language') else None,
         },
         '.js': {
             'name': 'javascript',
-            'grammar': tree_sitter_javascript.language(),
-            'parser': None,
-            'query_files': ['javascript']
+            'module': tree_sitter_javascript if HAS_JAVASCRIPT else None,
+            'language_func': lambda m: m.language() if hasattr(m, 'language') else None,
         },
         '.jsx': {
             'name': 'javascript',
-            'grammar': tree_sitter_javascript.language(),
-            'parser': None,
-            'query_files': ['javascript']
+            'module': tree_sitter_javascript if HAS_JAVASCRIPT else None,
+            'language_func': lambda m: m.language() if hasattr(m, 'language') else None,
         },
         '.ts': {
             'name': 'typescript',
-            'grammar': tree_sitter_typescript.language_typescript(),
-            'parser': None,
-            'query_files': ['typescript']
+            'module': tree_sitter_typescript if HAS_TYPESCRIPT else None,
+            'language_func': lambda m: m.language_typescript() if hasattr(m, 'language_typescript') else None,
         },
         '.tsx': {
             'name': 'typescript',
-            'grammar': tree_sitter_typescript.language_tsx(),
-            'parser': None,
-            'query_files': ['typescript']
-        },
-        '.ipynb': {
-            'name': 'jupyter',
-            'grammar': None,
-            'parser': None,
-            'query_files': []
-        },
-        '.md': {
-            'name': 'markdown',
-            'grammar': None,  # Would need tree-sitter-markdown
-            'parser': None,
-            'query_files': []
-        },
-        '.json': {
-            'name': 'json',
-            'grammar': None,  # Would need tree-sitter-json
-            'parser': None,
-            'query_files': []
+            'module': tree_sitter_typescript if HAS_TYPESCRIPT else None,
+            'language_func': lambda m: m.language_tsx() if hasattr(m, 'language_tsx') else None,
         }
     }
     
-    # Language-specific query patterns
+    # Simplified queries
     QUERIES = {
         'python': {
             'imports': """
@@ -96,226 +101,114 @@ class LanguageRouter:
             """,
             'functions': """
                 (function_definition
-                    name: (identifier) @func_name
-                    parameters: (parameters) @params
-                    return_type: (type)? @return_type
-                    body: (block) @body) @func_def
+                    name: (identifier) @func_name) @func_def
             """,
             'classes': """
                 (class_definition
-                    name: (identifier) @class_name
-                    superclasses: (argument_list)? @superclasses
-                    body: (block) @body) @class_def
-            """,
-            'decorators': """
-                (decorator
-                    (identifier) @decorator_name)
-            """,
-            'docstrings': """
-                (module (expression_statement (string)) @module_docstring)
-                (function_definition
-                    body: (block (expression_statement (string)) @func_docstring))
-                (class_definition
-                    body: (block (expression_statement (string)) @class_docstring))
-            """,
-            'calls': """
-                (call
-                    function: (attribute
-                        object: (identifier) @obj
-                        attribute: (identifier) @method)
-                    arguments: (argument_list) @args)
+                    name: (identifier) @class_name) @class_def
             """
         },
         'sql': {
             'tables': """
                 (select
-                    (from (table_ref (identifier)) @table_name))
+                    (from (identifier) @table_name))
                 (insert
-                    (into (table_ref (identifier)) @target_table))
-                (update
-                    (update_set (table_ref (identifier)) @target_table))
-                (delete
-                    (from (table_ref (identifier)) @target_table))
-                (join
-                    (table_ref (identifier)) @joined_table)
-            """,
-            'ctes': """
-                (with
-                    (common_table_expression
-                        name: (identifier) @cte_name
-                        query: (select) @cte_query))
-            """,
-            'functions': """
-                (function_call
-                    name: (identifier) @func_name
-                    arguments: (argument_list) @func_args)
+                    (into (identifier) @target_table))
             """
         },
         'yaml': {
             'keys': """
                 (block_mapping_pair
-                    key: (flow_node) @key
-                    value: (flow_node) @value)
-            """,
-            'sequences': """
-                (block_sequence
-                    (block_sequence_item (flow_node) @item))
+                    key: (flow_node) @key)
             """
         },
         'javascript': {
             'imports': """
                 (import_statement
                     source: (string) @source)
-                (import_specifier
-                    imported: (identifier) @imported
-                    local: (identifier) @local)
-            """,
-            'exports': """
-                (export_statement
-                    value: (identifier) @exported)
             """,
             'functions': """
                 (function_declaration
                     name: (identifier) @func_name)
-                (arrow_function) @arrow_func
             """
         },
         'typescript': {
             'imports': """
                 (import_statement
                     source: (string) @source)
-                (import_specifier
-                    imported: (identifier) @imported
-                    local: (identifier) @local)
-            """,
-            'exports': """
-                (export_statement
-                    value: (identifier) @exported)
             """,
             'functions': """
                 (function_declaration
                     name: (identifier) @func_name)
-                (arrow_function) @arrow_func
-            """,
-            'interfaces': """
-                (interface_declaration
-                    name: (identifier) @interface_name)
-            """,
-            'types': """
-                (type_alias_declaration
-                    name: (identifier) @type_name)
             """
         }
     }
     
     def __init__(self):
         """Initialize parsers for each language."""
-        self.parsers = {}
-        self.languages = {}
-        self.compiled_queries = {}
+        self.parsers: Dict[str, Parser] = {}
+        self.languages: Dict[str, Language] = {}
+        self.compiled_queries: Dict[str, Dict[str, Query]] = {}
         self._init_parsers()
+        print(f"✅ LanguageRouter initialized with {len(self.parsers)} parsers")
     
     def _init_parsers(self):
-        """Create parsers for each language with proper grammar initialization."""
+        """Create parsers for each language."""
         for ext, config in self.LANGUAGE_CONFIGS.items():
-            if config['grammar']:
+            if config['module'] and config['language_func']:
                 try:
-                    # Create parser and set language
-                    parser = tree_sitter.Parser()
-                    parser.set_language(config['grammar'])
+                    # Get language object
+                    lang_obj = config['language_func'](config['module'])
+                    if lang_obj is None:
+                        continue
                     
-                    # Store both parser and language
+                    # Wrap in Language
+                    language = Language(lang_obj)
+                    
+                    # Create parser with language
+                    parser = Parser(language)
+                    
+                    # Store
                     self.parsers[ext] = parser
-                    self.languages[config['name']] = config['grammar']
+                    self.languages[config['name']] = language
                     
-                    # Pre-compile queries for this language
-                    self._compile_queries_for_language(config['name'], config['grammar'])
+                    # Compile queries
+                    self._compile_queries(config['name'], language)
                     
                 except Exception as e:
                     print(f"Warning: Could not initialize parser for {ext}: {e}")
     
-    def _compile_queries_for_language(self, language_name: str, grammar):
-        """Pre-compile all queries for a language."""
+    def _compile_queries(self, language_name: str, language: Language):
+        """Compile queries for a language."""
         self.compiled_queries[language_name] = {}
         
         if language_name in self.QUERIES:
             for query_name, query_string in self.QUERIES[language_name].items():
                 try:
-                    compiled_query = grammar.query(query_string)
-                    self.compiled_queries[language_name][query_name] = compiled_query
+                    query = language.query(query_string)
+                    self.compiled_queries[language_name][query_name] = query
                 except Exception as e:
                     print(f"Warning: Could not compile query '{query_name}' for {language_name}: {e}")
     
-    def get_parser(self, file_path: str) -> Optional[tree_sitter.Parser]:
-        """
-        Get the appropriate parser for a file.
-        
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            tree_sitter.Parser instance or None if not supported
-        """
+    def get_parser(self, file_path: str) -> Optional[Parser]:
+        """Get parser for file."""
         ext = self._get_extension(file_path)
-        
-        # Handle Jupyter notebooks specially
-        if ext == '.ipynb':
-            return None
-        
         return self.parsers.get(ext)
     
-    def get_language(self, file_path: str) -> Optional[str]:
-        """
-        Get the language name for a file.
-        
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            Language name (e.g., 'python', 'sql') or None if not supported
-        """
+    def get_language_name(self, file_path: str) -> Optional[str]:
+        """Get language name for file."""
         ext = self._get_extension(file_path)
         config = self.LANGUAGE_CONFIGS.get(ext, {})
         return config.get('name')
     
-    def get_grammar(self, language_name: str) -> Optional[Any]:
-        """
-        Get the grammar object for a language.
-        
-        Args:
-            language_name: Name of the language
-            
-        Returns:
-            Grammar object or None if not found
-        """
-        return self.languages.get(language_name)
-    
-    def get_query(self, language_name: str, query_name: str) -> Optional[Any]:
-        """
-        Get a compiled query for a specific language and query type.
-        
-        Args:
-            language_name: Name of the language
-            query_name: Name of the query (e.g., 'imports', 'functions')
-            
-        Returns:
-            Compiled query object or None if not found
-        """
+    def get_query(self, language_name: str, query_name: str) -> Optional[Query]:
+        """Get compiled query."""
         if language_name in self.compiled_queries:
             return self.compiled_queries[language_name].get(query_name)
         return None
     
-    def parse_file(self, file_path: str, content: bytes) -> Optional[tree_sitter.Tree]:
-        """
-        Parse a file and return its AST.
-        
-        Args:
-            file_path: Path to the file
-            content: File content as bytes
-            
-        Returns:
-            tree_sitter.Tree object or None if parsing fails
-        """
+    def parse_file(self, file_path: str, content: bytes) -> Optional[Tree]:
+        """Parse file and return AST."""
         parser = self.get_parser(file_path)
         if not parser:
             return None
@@ -329,24 +222,18 @@ class LanguageRouter:
     
     def query_file(self, file_path: str, query_name: str) -> List[Dict[str, Any]]:
         """
-        Run a specific query on a file.
+        Run a query on a file using tree-sitter 0.22.0+ API.
         
-        Args:
-            file_path: Path to the file
-            query_name: Name of the query to run
-            
-        Returns:
-            List of captured nodes with their text and positions
+        FIXED: Using query.matches() instead of QueryCursor
         """
-        language = self.get_language(file_path)
-        if not language:
+        language_name = self.get_language_name(file_path)
+        if not language_name:
             return []
         
-        query = self.get_query(language, query_name)
+        query = self.get_query(language_name, query_name)
         if not query:
             return []
         
-        # Read and parse file
         try:
             with open(file_path, 'rb') as f:
                 content = f.read()
@@ -355,21 +242,31 @@ class LanguageRouter:
             if not tree:
                 return []
             
-            # Execute query
-            captures = query.captures(tree.root_node)
-            
-            # Process captures
             results = []
-            for node, tag in captures.items():
-                if node.text:
-                    results.append({
-                        'tag': tag,
-                        'text': node.text.decode('utf8'),
-                        'start_point': node.start_point,
-                        'end_point': node.end_point,
-                        'start_byte': node.start_byte,
-                        'end_byte': node.end_byte
-                    })
+            
+            # NEW API for tree-sitter 0.22.0+
+            # Query objects now have a matches() method
+            matches = query.matches(tree.root_node)
+            
+            # Process matches
+            for match in matches:
+                # Each match has pattern and captures
+                for capture in match.captures:
+                    node = capture.node
+                    tag = capture.tag if hasattr(capture, 'tag') else capture.name
+                    
+                    if node and node.text:
+                        try:
+                            text = node.text.decode('utf-8', errors='ignore')
+                        except:
+                            text = ""
+                        
+                        results.append({
+                            'tag': tag,
+                            'text': text,
+                            'start_line': node.start_point[0] + 1,
+                            'end_line': node.end_point[0] + 1
+                        })
             
             return results
             
@@ -377,89 +274,49 @@ class LanguageRouter:
             print(f"Error querying {file_path}: {e}")
             return []
     
-    def is_supported(self, file_path: str) -> bool:
-        """
-        Check if a file type is supported.
+    def query_tree(self, tree: Tree, language_name: str, query_name: str) -> List[Dict[str, Any]]:
+        """Run query on an existing tree using 0.22.0+ API."""
+        query = self.get_query(language_name, query_name)
+        if not query:
+            return []
         
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            True if the file type is supported
-        """
+        results = []
+        
+        # NEW API: query.matches()
+        matches = query.matches(tree.root_node)
+        
+        for match in matches:
+            for capture in match.captures:
+                node = capture.node
+                tag = capture.tag if hasattr(capture, 'tag') else capture.name
+                
+                if node and node.text:
+                    try:
+                        text = node.text.decode('utf-8', errors='ignore')
+                    except:
+                        text = ""
+                    
+                    results.append({
+                        'tag': tag,
+                        'text': text,
+                        'start_line': node.start_point[0] + 1,
+                        'end_line': node.end_point[0] + 1
+                    })
+        
+        return results
+    
+    def is_supported(self, file_path: str) -> bool:
+        """Check if file type is supported."""
         ext = self._get_extension(file_path)
-        return ext in self.LANGUAGE_CONFIGS
-    
-    def get_supported_extensions(self) -> List[str]:
-        """Get list of supported file extensions."""
-        return list(self.LANGUAGE_CONFIGS.keys())
-    
-    def get_supported_languages(self) -> List[str]:
-        """Get list of supported language names."""
-        languages = set()
-        for config in self.LANGUAGE_CONFIGS.values():
-            if config['name']:
-                languages.add(config['name'])
-        return sorted(list(languages))
+        return ext in self.parsers
     
     def _get_extension(self, file_path: str) -> str:
-        """
-        Get the extension of a file, handling double extensions like .spec.ts.
-        
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            File extension with dot
-        """
+        """Get file extension."""
         path = Path(file_path)
-        
-        # Check for common double extensions
-        double_extensions = ['.spec.ts', '.test.ts', '.d.ts', '.spec.js', '.test.js']
-        
-        for double_ext in double_extensions:
-            if str(path).endswith(double_ext):
-                return double_ext
-        
-        # Return normal extension
         return path.suffix.lower()
-    
-    def get_file_type_description(self, file_path: str) -> str:
-        """
-        Get a human-readable description of the file type.
-        
-        Args:
-            file_path: Path to the file
-            
-        Returns:
-            Description of the file type
-        """
-        language = self.get_language(file_path)
-        ext = self._get_extension(file_path)
-        
-        descriptions = {
-            '.py': 'Python source file',
-            '.sql': 'SQL query file',
-            '.yml': 'YAML configuration',
-            '.yaml': 'YAML configuration',
-            '.js': 'JavaScript source file',
-            '.jsx': 'JavaScript React component',
-            '.ts': 'TypeScript source file',
-            '.tsx': 'TypeScript React component',
-            '.ipynb': 'Jupyter notebook',
-            '.md': 'Markdown documentation',
-            '.json': 'JSON data file'
-        }
-        
-        base_desc = descriptions.get(ext, f'Unknown file type ({ext})')
-        
-        if language:
-            return f"{base_desc} ({language})"
-        
-        return base_desc
 
 
-# Singleton instance for global use
+# Singleton instance
 _default_router = None
 
 
